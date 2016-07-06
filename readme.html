@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+</head>
+
+<body>
+<p>每个组有一个名字，每个命令都用名字来表示这个组，就省得其他验证了。</p>
+<p>首先是进入一个组。注意因为组名是url的一部分，需要把其中某些字符转义（比如空格变成%20）。这个各语言里应该都有。下面所有的字符串参数可能都有这样的问题要考虑。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+<form id="form1" name="form1" method="get" action="http://tiancaihb.me/photo/group.php">
+  <p>group.php?group=&lt;组名&gt;
+  </p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group1" />
+  </p>
+  <p>
+    <input type="submit" name="go1" id="go1" value="提交" />
+  </p>
+  <p>会自动新建，返回json，是这个组的一些信息（虽然好像暂时没用）。</p>
+  <p>id: 组的编号<br />
+  name: 组名<br />
+  ip: 创建者的ip<br />
+  createtime: 
+  创建时间<br />
+  isnew: 是否新创建的
+  </p>
+</form>
+</div>
+<p>这时你可能想要知道这组都有哪些标签。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+<form id="form2" name="form2" method="get" action="http://tiancaihb.me/photo/listtag.php">
+  <p>listtag.php?group=&lt;组名&gt;
+  </p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group2" />
+  </p>
+  <p>
+    <input type="submit" name="go2" id="go2" value="提交" />
+  </p>
+  <p>返回json，是每个标签信息的数组。</p>
+  <p>id: 标签的编号<br />
+  name: 标签名<br />
+  count: 有这个标签的文件数</p>
+</form>
+</div>
+<p>还有列目录。每个文件有一个id，只能通过列目录，来获得文件名和id，不能反过来用文件名找文件。之后对这个文件的操作都是用文件id。</p>
+<p>可以建文件夹，文件夹也有个id。这样的话，每个文件和文件夹都有一个parent id属性，根目录的id是0。于是每个组的文件结构是一棵树。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+<form id="form3" name="form3" method="get" action="http://tiancaihb.me/photo/listfile.php">
+  <p>listfile.php?group=&lt;组名&gt;&amp;folderid=&lt;文件夹id&gt;</p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group3" />
+    <label for="group">folderid</label>
+    <input type="text" name="folderid" id="folderid3" />
+  </p>
+  <p>
+    <input type="submit" name="go3" id="go3" value="提交" />
+  </p>
+  <p>返回json，是以folderid为parent的文件和文件夹的信息的数组，还有每一项关联的标签。</p>
+  <p>id: 文件的id<br />
+  name: 文件的名字<br />
+isfolder: 是否为文件夹，0或1<br />
+size: 字节数<br />
+  createtime: 
+  创建时间<br />
+  tags: 标签的数组<br />
+  </p>
+  <p>tags的成员为：<br />
+    id: 标签的id<br />
+    name: 标签的名字
+  </p>
+</form>
+</div>
+<p>现在可以下载文件了。用组名和文件id来指定文件。如果指定尺寸，可以给用户先看个小图。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+<form id="form4" name="form4" method="get" action="http://tiancaihb.me/photo/getfile.php">
+  <p>getfile.php?group=&lt;组名&gt;&amp;file=&lt;文件id&gt;[&amp;width=&lt;宽度&gt;&amp;height=&lt;高度&gt;]</p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group4" />
+    <label for="group">fileid</label>
+    <input type="text" name="fileid" id="fileid4" />
+    <label for="group">width</label>
+    <input type="text" name="width" id="width4" />
+    <label for="group">height</label>
+    <input type="text" name="height" id="height4" />
+  </p>
+  <p>
+    <input type="submit" name="go4" id="go4" value="提交" />
+  </p>
+  <p>正常的话就返回这个文件。</p>
+</form>
+</div>
+<p>然后给文件设置标签的话，每次把所有标签都重新传进来，懒得写添加或删除了。标签之间用|分隔。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+<form id="form5" name="form5" method="get" action="http://tiancaihb.me/photo/settag.php">
+  <p>settag.php?group=&lt;组名&gt;&amp;file=&lt;文件id&gt;&amp;tags=&lt;标签们&gt;</p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group5" />
+    <label for="group">fileid</label>
+    <input type="text" name="fileid" id="fileid5" />
+    <label for="group">tags</label>
+    <input type="text" name="tags" id="tags5" />
+  </p>
+  <p>
+    <input type="submit" name="go5" id="go5" value="提交" />
+  </p>
+  <p>正常的话返回ok。</p>
+</form>
+</div>
+<p>删除文件很简单。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+<form id="form6" name="form6" method="get" action="http://tiancaihb.me/photo/delete.php">
+  <p>delete.php?group=&lt;组名&gt;&amp;file=&lt;文件id&gt;</p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group6" />
+    <label for="group">fileid</label>
+    <input type="text" name="fileid" id="fileid6" />
+  </p>
+  <p>
+    <input type="submit" name="go6" id="go6" value="提交" />
+  </p>
+  <p>正常的话返回ok。</p>
+</form>
+</div>
+<p>接下来看创建文件夹：指定parent id和文件夹的名字就可以。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+<form id="form7" name="form7" method="get" action="http://tiancaihb.me/photo/mkdir.php">
+  <p>mkdir.php?group=&lt;组名&gt;&amp;folderid=&lt;父文件夹的id&gt;&amp;name=&lt;我的名字&gt;</p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group7" />
+    <label for="group">folderid</label>
+    <input type="text" name="folderid" id="folderid7" />
+    <label for="group">name</label>
+    <input type="text" name="name" id="name7" />
+  </p>
+  <p>
+    <input type="submit" name="go7" id="go7" value="提交" />
+  </p>
+  <p>正常的话返回这个文件夹的id。</p>
+</form>
+</div>
+<p>最后是上传文件。这里比较麻烦一点，因为你又想指定一些参数，又要传文件本身，所以按照规定得用HTTP POST而不是GET，另外要用multipart/form-data的格式。你可以搜一下怎么用某种语言用这种格式上传文件。</p>
+<div style="border:solid;border-width:1;font-size:smaller">
+  <form action="http://tiancaihb.me/photo/upload.php" method="post" enctype="multipart/form-data" name="form8" id="form8">
+  <p>upload.php</p>
+  <p>POST字段：group=&lt;组名&gt;&amp;folderid=&lt;父文件夹的id&gt;&amp;name=&lt;我的名字&gt;</p>
+  <p>
+    <label for="group">group</label>
+    <input type="text" name="group" id="group8" />
+    <label for="group">folderid</label>
+    <input type="text" name="folderid" id="folderid8" />
+    <label for="group">name</label>
+    <input type="text" name="name" id="name8" />
+    <label for="file">file</label>
+    <input type="file" name="file" id="file8" />
+  </p>
+  <p>
+    <input type="submit" name="go8" id="go8" value="提交" />
+  </p>
+  <p>正常的话返回这个文件的id。</p>
+</form>
+</div>
+</body>
+</html>
